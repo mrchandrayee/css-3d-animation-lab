@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050817">
+<title>CSS 3D Animation Lab</title>
+<style>
+:root{--bg:#030615;--panel:#383536;--green:#00c86b;--blue:#67aaff;--orange:#f28a25;--ink:#eaf1ff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:#070a12;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;padding:24px}
+header{text-align:center;margin:0 auto 22px}
+header h1{margin:0;font-size:clamp(25px,4vw,38px);color:#72aaff;text-shadow:0 0 16px #3988ff70;letter-spacing:-.8px}
+header p{color:#8894aa;font-size:12px;margin:8px 0 0}
+.lab{max-width:1050px;margin:auto;border:2px solid var(--orange);background:#030615;box-shadow:0 12px 55px #0009}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:12px;background:#101827;border-bottom:1px solid #293348}
+.tab{background:transparent;border:1px solid transparent;border-radius:5px;color:#a9b5ca;padding:9px 13px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s}
+.tab:hover{border-color:#3d506d;color:white}.tab.active{background:#eaf2ff;color:#0b1322}
+.stage{height:330px;display:grid;place-items:center;position:relative;overflow:hidden;background:#030615;perspective:900px}
+.demo{width:100%;height:100%;display:grid;place-items:center;position:relative}
+.code-panel{background:var(--panel);padding:18px 20px;min-height:150px;border-top:1px solid #4a4444}
+.code-title{color:var(--green);font-size:12px;font-weight:800;margin:0 0 12px}
+pre{margin:0;white-space:pre-wrap;color:#00d8a0;font:600 13px/1.55 "SFMono-Regular",Consolas,monospace}
+.cube-scene{width:120px;height:120px;perspective:600px}
+.cube{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:spin 5s infinite linear}
+.face{position:absolute;width:120px;height:120px;background:rgba(246,164,25,.82);border:1px solid #ffe0a1;display:grid;place-items:center;color:#fff7d8;font-size:10px;backface-visibility:visible}
+.front{transform:translateZ(60px)}.back{transform:rotateY(180deg) translateZ(60px)}.right{transform:rotateY(90deg) translateZ(60px)}.left{transform:rotateY(-90deg) translateZ(60px)}.top{transform:rotateX(90deg) translateZ(60px)}.bottom{transform:rotateX(-90deg) translateZ(60px)}
+@keyframes spin{from{transform:rotateX(-25deg) rotateY(0)}to{transform:rotateX(-25deg) rotateY(360deg)}}
+.flip-card{width:150px;height:190px;perspective:800px;cursor:pointer}
+.flip-inner{height:100%;width:100%;position:relative;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.flip-card.active .flip-inner{transform:rotateY(180deg)}
+.flip-face{position:absolute;inset:0;display:grid;place-items:center;backface-visibility:hidden;border-radius:8px;font-weight:800;letter-spacing:1px}
+.flip-front{background:#299d18;color:#fff}.flip-back{background:linear-gradient(135deg,#00c987,#087b65);transform:rotateY(180deg);color:#fff}
+.depth-text{font-size:clamp(36px,8vw,62px);font-weight:900;letter-spacing:2px;color:#fff;text-shadow:1px 1px 0 #ff526c,2px 2px 0 #ff526c,3px 3px 0 #ff526c,4px 4px 0 #ff526c,5px 5px 0 #ff526c,6px 6px 0 #ff526c,7px 7px 0 #ff526c,8px 8px 0 #ff526c,0 15px 25px #000;animation:depth 2s ease-in-out infinite alternate}
+@keyframes depth{to{transform:translateZ(40px) translateY(-8px);text-shadow:1px 1px 0 #ff526c,2px 2px 0 #ff526c,3px 3px 0 #ff526c,4px 4px 0 #ff526c,5px 5px 0 #ff526c,6px 6px 0 #ff526c,7px 7px 0 #ff526c,8px 8px 0 #ff526c,9px 9px 0 #ff526c,10px 10px 0 #ff526c,0 22px 30px #000}
+.tilt{width:145px;height:145px;display:grid;place-items:center;color:white;font-size:13px;border-radius:3px;background:linear-gradient(140deg,#ff805c,#ff9e13);box-shadow:0 18px 35px #0008;transform-style:preserve-3d;transition:transform .15s ease;cursor:grab}
+.tilt:active{cursor:grabbing}
+.carousel-wrap{width:100%;height:100%;display:grid;place-items:center;overflow:hidden;perspective:800px}
+.carousel{position:relative;width:105px;height:130px;transform-style:preserve-3d;animation:carouselSpin 8s linear infinite}
+.carousel-item{position:absolute;inset:0;display:grid;place-items:center;background:#df20a7;color:white;font-weight:800;border:1px solid #ff8de2;backface-visibility:hidden}
+.carousel-item:nth-child(1){transform:rotateY(0deg) translateZ(145px)}
+.carousel-item:nth-child(2){transform:rotateY(90deg) translateZ(145px)}
+.carousel-item:nth-child(3){transform:rotateY(180deg) translateZ(145px)}
+.carousel-item:nth-child(4){transform:rotateY(270deg) translateZ(145px)}
+@keyframes carouselSpin{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
+.controls{display:flex;gap:10px;justify-content:center;align-items:center;padding:10px;background:#0c1423;color:#8d9bb3;font-size:11px}
+.controls button{border:1px solid #36455f;background:#16233a;color:#dce8ff;padding:6px 10px;border-radius:5px;cursor:pointer}
+@media(max-width:600px){body{padding:12px}.stage{height:290px}.code-panel{padding:15px 12px}pre{font-size:11px}.tab{padding:8px 9px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.cube,.depth-text,.carousel{animation:none!important}}
+</style>
+</head>
+<body>
+<header><h1>CSS 3D Animation</h1><p>Explore interactive 3D effects built with pure HTML, CSS and JavaScript</p></header>
+<main class="lab">
+<nav class="tabs" aria-label="Animation examples">
+<button class="tab active" data-demo="cube">3D Rotating Cube</button>
+<button class="tab" data-demo="flip">3D Flip Card</button>
+<button class="tab" data-demo="text">3D Depth Text</button>
+<button class="tab" data-demo="tilt">3D Tilt Effect</button>
+<button class="tab" data-demo="carousel">3D Carousel</button>
+</nav>
+<section class="stage"><div class="demo" id="demo"></div></section>
+<div class="controls" id="controls"><span>Live CSS demo</span><button id="replay">Replay animation</button></div>
+<section class="code-panel"><h2 class="code-title" id="code-title">3D Rotating Cube</h2><pre id="code"></pre></section>
+</main>
+<script>
+const examples={
+cube:{title:"3D Rotating Cube",code:`.cube {
+  transform-style: preserve-3d;
+  animation: spin 5s infinite linear;
+}
+
+@keyframes spin {
+  from { transform: rotateX(-25deg) rotateY(0); }
+  to   { transform: rotateX(-25deg) rotateY(360deg); }
+}`,html:`<div class="cube-scene"><div class="cube">${["front","back","right","left","top","bottom"].map((f,i)=>`<div class="face ${f}">${f.toUpperCase()}</div>`).join("")}</div></div>`},
+flip:{title:"3D Flip Card (Tap)",code:`.card {
+  perspective: 800px;
+}
+.card .inner {
+  transform-style: preserve-3d;
+  transition: transform 0.7s ease;
+}
+.card.active .inner {
+  transform: rotateY(180deg);
+}
+.card-face {
+  backface-visibility: hidden;
+}
+.card-back {
+  transform: rotateY(180deg);
+}`,html:`<div class="flip-card" id="flip-card" role="button" tabindex="0" aria-label="Tap to flip card"><div class="flip-inner"><div class="flip-face flip-front">Tap</div><div class="flip-face flip-back">3D FLIP</div></div></div>`},
+text:{title:"3D Depth Text",code:`.depth-text {
+  color: #fff;
+  text-shadow:
+    1px 1px 0 #ff526c,
+    2px 2px 0 #ff526c,
+    3px 3px 0 #ff526c,
+    4px 4px 0 #ff526c,
+    5px 5px 0 #ff526c,
+    6px 6px 0 #ff526c,
+    7px 7px 0 #ff526c,
+    8px 8px 0 #ff526c;
+}
+@keyframes pop {
+  to { transform: translateZ(40px); }
+}`,html:`<div class="depth-text">3D TEXT</div>`},
+tilt:{title:"3D Tilt Effect",code:`.tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease;
+}
+
+/* JavaScript calculates pointer position */
+.tilt:hover {
+  transform: rotateX(20deg) rotateY(20deg);
+}`,html:`<div class="tilt" id="tilt">Touch / Move</div>`},
+carousel:{title:"3D Carousel",code:`.carousel {
+  transform-style: preserve-3d;
+  animation: rotate 8s linear infinite;
+}
+
+.carousel-item:nth-child(1) {
+  transform: rotateY(0deg) translateZ(145px);
+}
+.carousel-item:nth-child(2) {
+  transform: rotateY(90deg) translateZ(145px);
+}
+.carousel-item:nth-child(3) {
+  transform: rotateY(180deg) translateZ(145px);
+}
+.carousel-item:nth-child(4) {
+  transform: rotateY(270deg) translateZ(145px);
+}`,html:`<div class="carousel-wrap"><div class="carousel">${[1,2,3,4].map(n=>`<div class="carousel-item">${n}</div>`).join("")}</div></div>`}
+};
+const tabs=[...document.querySelectorAll(".tab")],demo=document.getElementById("demo"),code=document.getElementById("code"),title=document.getElementById("code-title"),controls=document.getElementById("controls");
+let current="cube",paused=false;
+function select(key){
+ current=key;const item=examples[key];
+ tabs.forEach(t=>t.classList.toggle("active",t.dataset.demo===key));
+ demo.innerHTML=item.html;title.textContent=item.title;code.textContent=item.code;
+ controls.innerHTML='<span>Live CSS demo</span><button id="replay">Replay animation</button>';
+ if(key==="flip"){
+  const card=document.getElementById("flip-card");
+  const flip=()=>card.classList.toggle("active");
+  card.addEventListener("click",flip);card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip()}});
+ }
+ if(key==="tilt"){
+  const el=document.getElementById("tilt");
+  el.addEventListener("pointermove",e=>{
+   const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+   el.style.transform=`rotateX(${-y*35}deg) rotateY(${x*35}deg)`;
+  });
+  el.addEventListener("pointerleave",()=>el.style.transform="rotateX(0) rotateY(0)");
+ }
+ document.getElementById("replay").addEventListener("click",()=>{
+  const animated=demo.querySelector(".cube,.depth-text,.carousel");
+  if(animated){animated.style.animation="none";void animated.offsetWidth;animated.style.animation="";}
+  const card=document.getElementById("flip-card");if(card)card.classList.remove("active");
+ });
+}
+tabs.forEach(t=>t.addEventListener("click",()=>select(t.dataset.demo)));
+select("cube");
+</script>
+</body>
+</html>
